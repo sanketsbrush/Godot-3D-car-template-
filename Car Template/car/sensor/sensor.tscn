@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cg3368fb0dbys"]
+
+[ext_resource type="Script" uid="uid://dbodhunyjbb2g" path="res://car/sensor/sensor.gd" id="1_gxkro"]
+
+[node name="r" type="RayCast3D" unique_id=1577121333]
+script = ExtResource("1_gxkro")
+
+[node name="r1" type="RayCast3D" parent="." unique_id=759575239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 1.5)
+
+[node name="r2" type="RayCast3D" parent="." unique_id=1239949265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, -1.5)
+
+[node name="r3" type="RayCast3D" parent="." unique_id=194753542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0, 1.5)
+
+[node name="r4" type="RayCast3D" parent="." unique_id=1031606782]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0, -1.5)

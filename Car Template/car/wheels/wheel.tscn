@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://uhjmp6fea6nm"]
+
+[ext_resource type="Script" uid="uid://bunr7vu2e6r3v" path="res://car/wheels/wheel.gd" id="1_nkf0t"]
+
+[sub_resource type="VisualShaderNodeColorConstant" id="VisualShaderNodeColorConstant_dsiaf"]
+constant = Color(0.008202031, 0.008202021, 0.008202025, 1)
+
+[sub_resource type="VisualShader" id="VisualShader_xia0a"]
+nodes/fragment/2/node = SubResource("VisualShaderNodeColorConstant_dsiaf")
+nodes/fragment/2/position = Vector2(120, 180)
+nodes/fragment/connections = PackedInt32Array(2, 0, 0, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gpi0l"]
+render_priority = 0
+shader = SubResource("VisualShader_xia0a")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_vq7p2"]
+material = SubResource("ShaderMaterial_gpi0l")
+top_radius = 0.4
+bottom_radius = 0.4
+height = 0.5
+radial_segments = 16
+
+[node name="Wheel" type="VehicleWheel3D" unique_id=1951239414]
+use_as_traction = true
+use_as_steering = true
+wheel_roll_influence = 1.0
+wheel_radius = 0.4
+wheel_rest_length = 0.2
+wheel_friction_slip = 5.0
+suspension_travel = 1.0
+suspension_stiffness = 100.0
+suspension_max_force = 2000.0
+damping_compression = 1.0
+damping_relaxation = 1.0
+script = ExtResource("1_nkf0t")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1100198081]
+transform = Transform3D(-3.49691e-08, -0.8, 0, 0.8, -3.49691e-08, 0, 0, 0, 0.8, 0, 0, 0)
+mesh = SubResource("CylinderMesh_vq7p2")

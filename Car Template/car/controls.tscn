@@ -1,0 +1,206 @@
+[gd_scene format=3 uid="uid://j7fq6nfda36s"]
+
+[sub_resource type="GDScript" id="GDScript_4vqr3"]
+resource_name = "controls"
+script/source = "extends Button
+
+@onready var h_box: HBoxContainer = $\"../h_box\"
+
+func _ready() -> void:
+	focus_mode=Control.FOCUS_NONE
+	toggle_mode=true
+	button_pressed=false
+	
+func _process(_delta: float) -> void:
+
+	h_box.visible=button_pressed
+"
+
+[sub_resource type="GDScript" id="GDScript_gpdjo"]
+resource_name = "custom key"
+script/source = "extends Button
+@export var Input_Action:StringName
+
+func _ready() -> void:
+	focus_mode=Control.FOCUS_NONE
+	toggle_mode=true
+	button_pressed=false
+	add_key(Input_Action,text)
+
+
+func _input(event: InputEvent) -> void:
+	if button_pressed and event is InputEventKey:
+		remove_key(Input_Action,text)
+		text=OS.get_keycode_string(event.keycode)
+		add_key(Input_Action,text)
+		button_pressed=false
+
+
+func add_key(Action:StringName,key:String):
+	var Ki = InputEventKey.new()
+	Ki.physical_keycode = OS.find_keycode_from_string(key)
+	InputMap.action_add_event(Action, Ki)
+
+func remove_key(Action:StringName,key:String):
+	var Ki = InputEventKey.new()
+	Ki.physical_keycode = OS.find_keycode_from_string(key)
+	InputMap.action_erase_event(Action,Ki)
+"
+
+[node name="Control" type="VBoxContainer" unique_id=1538765342]
+offset_right = 337.0
+offset_bottom = 310.0
+
+[node name="Keys" type="Button" parent="." unique_id=373776760]
+layout_mode = 2
+text = "Controls"
+script = SubResource("GDScript_4vqr3")
+
+[node name="h_box" type="HBoxContainer" parent="." unique_id=1090938713]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 19
+alignment = 1
+
+[node name="v_box1" type="VBoxContainer" parent="h_box" unique_id=950853451]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="Label" type="Label" parent="h_box/v_box1" unique_id=1695993326]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "UP :"
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="h_box/v_box1" unique_id=1521954355]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "DOWN :"
+vertical_alignment = 1
+
+[node name="Label3" type="Label" parent="h_box/v_box1" unique_id=99435040]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "LEFT :"
+vertical_alignment = 1
+
+[node name="Label4" type="Label" parent="h_box/v_box1" unique_id=1245949790]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "RIGHT:"
+vertical_alignment = 1
+
+[node name="Label5" type="Label" parent="h_box/v_box1" unique_id=663387796]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "BREAK :"
+vertical_alignment = 1
+
+[node name="Label8" type="Label" parent="h_box/v_box1" unique_id=1161176072]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "DRIFT :"
+vertical_alignment = 1
+
+[node name="Label6" type="Label" parent="h_box/v_box1" unique_id=1042978980]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "REORIENTATE :"
+vertical_alignment = 1
+
+[node name="Label7" type="Label" parent="h_box/v_box1" unique_id=686654851]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "TPP/FPP :"
+vertical_alignment = 1
+
+[node name="v_box2" type="VBoxContainer" parent="h_box" unique_id=1818255547]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="up" type="Button" parent="h_box/v_box2" unique_id=876723289]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "W"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_up"
+
+[node name="down" type="Button" parent="h_box/v_box2" unique_id=1450927091]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "S"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_down"
+
+[node name="left" type="Button" parent="h_box/v_box2" unique_id=2140065293]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "A"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_left"
+
+[node name="right" type="Button" parent="h_box/v_box2" unique_id=1042265460]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "D"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_right"
+
+[node name="break" type="Button" parent="h_box/v_box2" unique_id=1891927937]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "Space"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_accept"
+
+[node name="Label9" type="Label" parent="h_box/v_box2" unique_id=867712597]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+text = "ACCLERATE+BRAKE+STEER"
+horizontal_alignment = 1
+
+[node name="offtop" type="Button" parent="h_box/v_box2" unique_id=804613442]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "R"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_text_backspace"
+
+[node name="offtop2" type="Button" parent="h_box/v_box2" unique_id=762436514]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 0
+toggle_mode = true
+text = "Q"
+script = SubResource("GDScript_gpdjo")
+Input_Action = &"ui_focus_next"

@@ -1,0 +1,283 @@
+[gd_scene load_steps=10 format=3 uid="uid://cax2ya20kqpyx"]
+
+[sub_resource type="GDScript" id="GDScript_mdbyd"]
+script/source = "extends VehicleBody3D
+
+@onready var fr: VehicleWheel3D = $fr
+@onready var br: VehicleWheel3D = $br
+@onready var fl: VehicleWheel3D = $fl
+@onready var bl: VehicleWheel3D = $bl
+@onready var label: Label = $Label
+
+
+func _physics_process(delta: float) -> void:
+	
+	var vel=Input.get_axis(\"ui_down\",\"ui_up\")+.3
+	var steer=Input.get_axis(\"ui_right\",\"ui_left\")
+	var brk=int(Input.is_action_pressed(\"ui_accept\"))
+	var lerp_drf=(abs(vel*steer)*brk)*.5
+	var drf=.9-lerpf(lerp_drf,0.,0.1)
+	
+	engine_force=vel*500
+	steering=lerpf(steering,deg_to_rad(steer*40),.2)
+	bl.wheel_friction_slip=drf
+	br.wheel_friction_slip=drf
+	brake=brk*5
+
+func _process(delta: float) -> void:
+	var fps=Engine.get_frames_per_second()
+	var spd=sqrt(linear_velocity.x**2+linear_velocity.y**2+linear_velocity.z**2)
+	var drf_check=abs(int(bl.get_skidinfo())-1)
+	label.text=\"fps: \"+str(fps)+\"\\nspeed: \"+str(int(spd))+\"\\nis drifting: \"+str(drf_check)
+
+func _init() -> void:
+	if Input.is_action_just_pressed(\"ui_text_delete\"):
+		get_tree().reload_current_scene()
+
+func _on_spd_2x_area_entered(area: Area3D) -> void:
+	pass # Replace with function body.
+func _on_spd_2x_area_exited(area: Area3D) -> void:
+	pass # Replace with function body.
+	
+func _on_spd_3x_area_entered(area: Area3D) -> void:
+	pass # Replace with function body.
+func _on_spd_3x_area_exited(area: Area3D) -> void:
+	pass # Replace with function body.
+
+func _on_damp_area_entered(area: Area3D) -> void:
+	pass # Replace with function body.
+func _on_damp_area_exited(area: Area3D) -> void:
+	pass # Replace with function body.
+
+func _on_eng_on_off_area_entered(area: Area3D) -> void:
+	pass # Replace with function body.
+func _on_eng_on_off_area_exited(area: Area3D) -> void:
+	pass # Replace with function body.
+
+func _on_check_area_entered(area: Area3D) -> void:
+	print(\"check\")
+"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l5ynk"]
+albedo_color = Color(1, 0.627451, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2a1k8"]
+material = SubResource("StandardMaterial3D_l5ynk")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j3hui"]
+size = Vector3(3.8, 0.4, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2mhya"]
+size = Vector3(1.4, 0.8, 1.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puoq0"]
+albedo_color = Color(0.340339, 0.340339, 0.340339, 0.286275)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7nd2g"]
+height = 0.415
+radial_segments = 6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u1qat"]
+size = Vector3(4, 1.1, 2)
+
+[sub_resource type="GDScript" id="GDScript_b1a7y"]
+resource_name = "camera_set"
+script/source = "extends Node3D
+@onready var fpp: Camera3D = $fpp
+@onready var tpp: Camera3D = $Node/tpp
+@onready var tpp_pos: Node3D = $\"tpp pos\"
+@onready var tpp_look_at: Node3D = $\"tpp look at\"
+
+func _physics_process(delta: float) -> void:
+	tpp_pos.position.z=lerp(tpp_pos.position.z,Input.get_axis(\"ui_left\",\"ui_right\")*-1,.1)
+	tpp.global_position=lerp(tpp.global_position,tpp_pos.global_position,.5)
+	tpp.look_at(tpp_look_at.global_position,Vector3.UP,false)
+	if Input.is_action_pressed(\"ui_down\"):
+		rotation_degrees.y=lerp(rotation_degrees.y,270.,.1)
+	else:rotation_degrees.y=lerp(rotation_degrees.y,90.,.1)
+func  _process(delta: float) -> void:
+	if Input.is_action_just_pressed(\"ui_focus_next\"):
+		tpp.current=!tpp.current
+"
+
+[node name="car" type="VehicleBody3D"]
+collision_layer = 0
+input_ray_pickable = false
+mass = 50.0
+gravity_scale = 5.0
+center_of_mass_mode = 1
+linear_damp = 0.1
+angular_damp = 0.1
+script = SubResource("GDScript_mdbyd")
+
+[node name="body" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+
+[node name="box" type="MeshInstance3D" parent="body"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 1.404, -1.5, 0.2, 0)
+mesh = SubResource("BoxMesh_2a1k8")
+skeleton = NodePath("../..")
+
+[node name="box2" type="MeshInstance3D" parent="body"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 1.404, 1.5, 0.2, 0)
+mesh = SubResource("BoxMesh_2a1k8")
+skeleton = NodePath("../..")
+
+[node name="box3" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1.4278, 0, 0, 0, 0.7788, 0, 0, 0, 1.82239, 0.3, 0.4, 0)
+mesh = SubResource("BoxMesh_2a1k8")
+skeleton = NodePath("../..")
+
+[node name="box4" type="MeshInstance3D" parent="body"]
+transform = Transform3D(3.98785, 0, 0, 0, 0.397188, 0, 0, 0, 0.820076, 0, 0.2, 0)
+mesh = SubResource("BoxMesh_2a1k8")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230768, 0.2, 0.023077)
+shape = SubResource("BoxShape3D_j3hui")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0.4, -0.276923)
+shape = SubResource("BoxShape3D_2mhya")
+
+[node name="fr" type="VehicleWheel3D" parent="."]
+physics_interpolation_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.776923, 0.2, 1.52308)
+use_as_traction = true
+use_as_steering = true
+wheel_rest_length = 0.2
+wheel_friction_slip = 0.9
+suspension_travel = 1.0
+suspension_stiffness = 100.0
+suspension_max_force = 1000.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fr"]
+transform = Transform3D(-3.49691e-08, -0.8, 0, 0.8, -3.49691e-08, 0, 0, 0, 0.8, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_puoq0")
+mesh = SubResource("CylinderMesh_7nd2g")
+
+[node name="fl" type="VehicleWheel3D" parent="."]
+physics_interpolation_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.823077, 0.2, 1.52308)
+use_as_traction = true
+use_as_steering = true
+wheel_rest_length = 0.2
+wheel_friction_slip = 0.9
+suspension_travel = 1.0
+suspension_stiffness = 100.0
+suspension_max_force = 1000.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="fl"]
+transform = Transform3D(-3.49691e-08, -0.8, 0, 0.8, -3.49691e-08, 0, 0, 0, 0.8, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_puoq0")
+mesh = SubResource("CylinderMesh_7nd2g")
+skeleton = NodePath("../../fr/MeshInstance3D")
+
+[node name="br" type="VehicleWheel3D" parent="."]
+physics_interpolation_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.776923, 0.2, -1.47692)
+wheel_rest_length = 0.2
+wheel_friction_slip = 0.9
+suspension_travel = 1.0
+suspension_stiffness = 100.0
+suspension_max_force = 1000.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="br"]
+transform = Transform3D(-3.49691e-08, -0.8, 0, 0.8, -3.49691e-08, 0, 0, 0, 0.8, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_puoq0")
+mesh = SubResource("CylinderMesh_7nd2g")
+skeleton = NodePath("../../fl/MeshInstance3D")
+
+[node name="bl" type="VehicleWheel3D" parent="."]
+physics_interpolation_mode = 2
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.823077, 0.2, -1.47692)
+wheel_rest_length = 0.2
+wheel_friction_slip = 0.9
+suspension_travel = 1.0
+suspension_stiffness = 100.0
+suspension_max_force = 1000.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="bl"]
+transform = Transform3D(-3.49691e-08, -0.8, 0, 0.8, -3.49691e-08, 0, 0, 0, 0.8, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_puoq0")
+mesh = SubResource("CylinderMesh_7nd2g")
+skeleton = NodePath("../../br/MeshInstance3D")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="spd2x" type="Area3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="spd2x"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 5.96046e-08)
+shape = SubResource("BoxShape3D_u1qat")
+
+[node name="spd3x" type="Area3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="spd3x"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 5.96046e-08)
+shape = SubResource("BoxShape3D_u1qat")
+
+[node name="damp" type="Area3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="damp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 5.96046e-08)
+shape = SubResource("BoxShape3D_u1qat")
+
+[node name="eng_on_off" type="Area3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="eng_on_off"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 5.96046e-08)
+shape = SubResource("BoxShape3D_u1qat")
+
+[node name="check" type="Area3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+collision_layer = 32
+collision_mask = 32
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="check"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 5.96046e-08)
+shape = SubResource("BoxShape3D_u1qat")
+
+[node name="camera_setup" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0230769, 0, 0.0230769)
+script = SubResource("GDScript_b1a7y")
+
+[node name="fpp" type="Camera3D" parent="camera_setup"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.406703, 0.783241, 0)
+
+[node name="Node" type="Node" parent="camera_setup"]
+
+[node name="tpp" type="Camera3D" parent="camera_setup/Node"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 3, -4)
+current = true
+
+[node name="tpp pos" type="Node3D" parent="camera_setup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 3, 0)
+
+[node name="tpp look at" type="Node3D" parent="camera_setup"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+
+[connection signal="area_entered" from="spd2x" to="." method="_on_spd_2x_area_entered"]
+[connection signal="area_exited" from="spd2x" to="." method="_on_spd_2x_area_exited"]
+[connection signal="area_entered" from="spd3x" to="." method="_on_spd_3x_area_entered"]
+[connection signal="area_exited" from="spd3x" to="." method="_on_spd_3x_area_exited"]
+[connection signal="area_entered" from="damp" to="." method="_on_damp_area_entered"]
+[connection signal="area_exited" from="damp" to="." method="_on_damp_area_exited"]
+[connection signal="area_entered" from="eng_on_off" to="." method="_on_eng_on_off_area_entered"]
+[connection signal="area_exited" from="eng_on_off" to="." method="_on_eng_on_off_area_exited"]
+[connection signal="area_entered" from="check" to="." method="_on_check_area_entered"]

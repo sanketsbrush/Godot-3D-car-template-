@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://ciwdo3ajgbuv3"]
+
+[ext_resource type="Script" uid="uid://dodndsxssqoi2" path="res://car/trails/trail.gd" id="1_2grh6"]
+
+[sub_resource type="Gradient" id="Gradient_vl2bd"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_72ido"]
+gradient = SubResource("Gradient_vl2bd")
+width = 1
+height = 3
+fill_to = Vector2(0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_coc8s"]
+transparency = 4
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.490196)
+albedo_texture = SubResource("GradientTexture2D_72ido")
+texture_filter = 1
+disable_receive_shadows = true
+stencil_flags = 2
+stencil_color = Color(0.34407577, 0.34407574, 0.34407574, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mb3vn"]
+
+[node name="trail" type="SpringArm3D" unique_id=417130891]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+collision_mask = 3
+spring_length = 0.45
+
+[node name="trail" type="MeshInstance3D" parent="." unique_id=2137255234]
+transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_coc8s")
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("BoxMesh_mb3vn")
+skeleton = NodePath("../..")
+script = ExtResource("1_2grh6")
